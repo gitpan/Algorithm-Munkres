@@ -1,6 +1,6 @@
 package Algorithm::Munkres;
 
-use 5.008005;
+use 5.004;
 use strict;
 use warnings;
 
@@ -532,7 +532,7 @@ __END__
 
     Algorithm::Munkres - Perl extension for Munkres' solution to 
     classical Assignment problem for square and rectangular matrices 
-    This module extends the solution of Assignement problem for square
+    This module extends the solution of Assignment problem for square
     matrices to rectangular matrices by padding zeros. Thus a rectangular 
     matrix is converted to square matrix by padding necessary zeros.
 

@@ -5,6 +5,10 @@ SYNOPSIS
     A list of changes to the Algorithm::Munkres module.
 
 DESCRIPTION
+   Version 0.04 (Algorithm::Munkres-0.04 Released on 28th Nov 2004)
+
+        1. Modified Munkres.pm and Makefile.PL to support Perl v5.004 and higher.
+
    Version 0.03 (Algorithm::Munkres-0.03 Released on 21th Nov 2004)
 
         1. Modified Munkres.pm to handle rectangular matrices
