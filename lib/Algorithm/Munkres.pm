@@ -44,8 +44,12 @@ sub assign
 #   @org_mat = @mat;
 
     #initialize mask, column cover and row cover matrices
-    @colcov = ( 0 ) x $#mat;
-    @rowcov = ( 0 ) x $#mat;
+    for($i=0;$i<=$#mat;$i++)
+    {
+	$colcov[$i] = 0;
+	$rowcov[$i] = 0;
+    }
+
     for($i=0;$i<=$#mat;$i++)
     {
 	for($j=0;$j<=$#mat;$j++)
@@ -83,6 +87,7 @@ sub assign
     }
 
 #Code for tracing------------------
+    <<'ee';
     print "\nInput Matrix:\n";
     for($i=0;$i<=$#mat;$i++)
     {
@@ -92,7 +97,8 @@ sub assign
 	}
 	print "\n";
     }
-	print "\nMask Matrix:\n";
+    
+    print "\nMask Matrix:\n";
     for($i=0;$i<=$#mat;$i++)
     {
 	for($j=0;$j<=$#mat;$j++)
@@ -101,11 +107,14 @@ sub assign
 	}
 	print "\n";
     }
-	print "\nOutput Matrix:\n";
+
+    print "\nOutput Matrix:\n";
     for($i=0;$i<=$#mat;$i++)
     {
 	print $rsolution_mat->[$i] . "\n";
     }
+ee
+
 #----------------------------------
 
 }
@@ -113,7 +122,7 @@ sub assign
 #Step 1 - Find minimum value for every row and subtract this min from each element of the row.
 sub stepone
 {
-    print "Step 1 \n";
+#    print "Step 1 \n";
     my ($i, $j, @min);
 
     #Find the minimum value for every row
@@ -126,7 +135,7 @@ sub stepone
 	    {
 		$min[$i] = $mat[$i][$j];
 	    }
-	    print $mat[$i][$j] . "\t";
+#	    print $mat[$i][$j] . "\t";
 	}    
 	
         #Subtract the minimum value of the row from each element of the row.
@@ -135,7 +144,7 @@ sub stepone
 	    $mat[$i][$j] -= $min[$i];
 	}	
     }
-    print "Step 1 end \n";
+#    print "Step 1 end \n";
 }
 
 #Step 2 - Star the zeroes, Create the mask and cover matrices. Re-initialize the cover matrices for next steps.
@@ -143,7 +152,7 @@ sub stepone
 #A next starred zero can occur only in those columns and rows which have not been previously covered by any other starred zero.
 sub steptwo
 {
-    print "Step 2 \n";
+#    print "Step 2 \n";
  
     my ($i, $j) = (0,0);
 
@@ -151,7 +160,7 @@ sub steptwo
     {
 	for($j=0;$j<=$#mat;$j++)
 	{
-	    if($mat[$i][$j] == 0 && $colcov[$j] == 0 && $rowcov[$j] == 0)
+	    if($mat[$i][$j] == 0 && $colcov[$j] == 0 && $rowcov[$i] == 0)
 	    {
 		$mask[$i][$j] = 1;
 		$colcov[$j] = 1;
@@ -161,14 +170,13 @@ sub steptwo
     }
     #Re-initialize the cover matrices
     &clear_covers();
-    print "Step 2 end\n";
+#    print "Step 2 end\n";
 }
-
 
 #Step 3 - Check if each column has a starred zero. If yes then the problem is solved else proceed to step 4
 sub stepthree
 {
-    print "Step 3 \n";
+#    print "Step 3 \n";
 
     my $cnt = 0;
     my ($i, $j) = (0,0);
@@ -186,12 +194,12 @@ sub stepthree
     }
     if($cnt > $#mat)
     {
-       print "Step 3 end. Next expected step 7 \n";
+#       print "Step 3 end. Next expected step 7 \n";
        return 7;
     }
     else
     {
-       print "Step 3 end. Next expected step 4 \n";
+#       print "Step 3 end. Next expected step 4 \n";
        return 4;
     }
 
@@ -204,7 +212,7 @@ sub stepthree
 #Else proceed to step 6.
 sub stepfour
 {
-    print "Step 4 \n";
+#    print "Step 4 \n";
     my $done  = 0;
     my $step = 0;
     my ($row,$col) = (-1,-1);
@@ -237,7 +245,7 @@ sub stepfour
 	    }
 	}
     }
-    print "Step 4 end. Next expected step $step\n";
+#    print "Step 4 end. Next expected step $step\n";
     return $step;
 }
 
@@ -295,7 +303,7 @@ sub find_star_in_row
 #Clear the cover matrices and clear any primes i.e. values=2 from mask matrix.
 sub stepfive
 {
-    print "Step 5 \n";
+#    print "Step 5 \n";
 
     my $cnt = 0;
     my $done = 0;
@@ -329,7 +337,7 @@ sub stepfive
     &clear_covers();
     &erase_primes();
 
-    print "Step 5 end \n";
+#    print "Step 5 end \n";
 }
 
 #Tries to find starred zero in the given column and returns the row number
@@ -423,7 +431,7 @@ sub erase_primes
 #Proceed to step 4.
 sub stepsix
 {
-    print "Step 6 \n";
+#    print "Step 6 \n";
     my ($i, $j);
     my $minval = 0;
 
@@ -444,7 +452,7 @@ sub stepsix
 	}
     }
 
-    print "Step 6 end \n";
+#    print "Step 6 end \n";
 }
 
 #Finds the minimum value from all the matrix values which are not covered.
@@ -476,59 +484,87 @@ __END__
 
 =head1 NAME
 
-Algorithm::Munkres - Perl extension for Munkres' solution to classical Assignment problem
+Algorithm::Munkres - Perl extension for Munkres' solution to classical Assignment problem for square matrices
 
 =head1 SYNOPSIS
 
 use Algorithm::Munkres;
 
     @mat = (
-        [ 12, 3, 7, 4, 10],
-	[ 5, 10, 6, 2, 4],
-	[ 8, 5, 1, 4, 9],
-	[ 15, 2, 7, 8, 10],
-	[ 7, 2, 8, 1, 12],
-	);
+         [ 12, 3, 7, 4, 10],
+	 [ 5, 10, 6, 2, 4],
+	 [ 8, 5, 1, 4, 9],
+	 [ 15, 2, 7, 8, 10],
+	 [ 7, 2, 8, 1, 12],
+	 );
 
-assign(\@mat);
+assign(\@mat,\@out_mat);
 
 =head1 DESCRIPTION
 
-This module implements the Munkres' solution to classical Assignment problem.
-If we have a MxN matrix of Workers and the Jobs to be assigned, then this module assigns one job to each worker in such a way that
-overall/sum of the cost of jobs is the lowest possible value.
-  eg: MxN = [12   3   7   4   10
-              5  10   6   2    4
-              8   5   1   4    9
-             15   2   7   8   10
-              7   2   8   1   12]
+Assignment Problem: Given N jobs and N workers, how should the assignment of a Worker to a Job be done, 
+so as to minimize the time taken. 
 
-is the input matrix, then this module will return a matrix of Mx1 dimensions, like:
-    solution = [3
-                4
-                2
-                1
-                0]
+	Thus if we have 3 jobs p,q,r and 3 workers x,y,z such that:
+	    x  y  z		
+	 p  2  4  7
+	 q  3  9  5
+	 r  8  2  9
+        
+        where the cell values of the above matrix give the time required for the worker(given by column name) 
+        to complete the job(given by the row name) 
+    
+	then possible solutions are:	
+		 	 Total
+	 1. 2, 9, 9       20
+	 2. 2, 2, 5        9
+	 3. 3, 4, 9       16
+	 4. 3, 2, 7       12
+	 5. 8, 9, 7       24
+	 6. 8, 4, 5       17
 
-where value '3' says that 4th column in the input matrix is the assigned column/solution for the 1st row.
-      value '4' says that 5th column in the input matrix is the assigned column/solution for the 2st row and so on.
-      Thus for the given input matrix, the optimal assignment i.e. the assignment which minimizes the sum of all job costs is:
-  eg: MxN = [0   0   0   4   0
-             0   0   0   0   4
-             0   0   1   0   0
-             0   2   0   0   0 
-             7   0   0   0   0]
-     
+Thus (2) is the optimal solution for the above problem.
+This kind of brute-force approach of solving Assignment problem quickly becomes slow and bulky as N grows, 
+because the number of possible solution are N! and thus the task is to evaluate each and then  
+find the optimal solution.(If N=10, number of possible solutions: 3628800 !)
+Munkres' gives us a solution to this problem, which is implemented in this module.
 
-Note: The 'assign' subroutine expects the input array's reference and not the complete array. eg:assign(\@mat);
-
-=head2 EXPORT
+=head1 EXPORT
 
 "assign" function by default.
 
+=head1 INPUT
+
+The input matrix should be in a two dimensional array(array of array) and the 
+'assign' subroutine expects a reference to this array and not the complete array.
+eg:assign(\@inp_mat, \@out_mat);
+The second argument to the assign subroutine is the reference to the output array.
+
+=head1 OUTPUT
+
+The assign subroutine expects references to two arrays as its input paramenters. 
+The second parameter is the reference to the output array. This array is populated by assign subroutine.
+This array is single dimensional Nx1 matrix.
+For above example the output array returned will be:
+     (0,
+     2,
+     1)
+
+where 
+0th element indicates that 0th row is assigned 0th column.
+1st element indicates that 1st row is assigned 2nd column.
+2nd element indicates that 2nd row is assigned 1st column.
+
 =head1 SEE ALSO
 
-http://216.249.163.93/bob.pilgrim/445/munkres.html
+1. http://216.249.163.93/bob.pilgrim/445/munkres.html
+
+2. Munkres, J. Algorithms for the assignment and transportation Problems. J. Siam 5 (Mar. 1957), 32-38
+
+3. François Bourgeois and Jean-Claude Lassalle. 1971.
+   An extension of the Munkres algorithm for the assignment problem to rectangular matrices.
+   Communication ACM, 14(12):802-804
+
 
 =head1 AUTHOR
 
@@ -540,7 +576,7 @@ tpederse@d.umn.edu
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2000-2004, Ted Pedersen and Anagha Kulkarni
+Copyright (C) 2004-2005, Ted Pedersen and Anagha Kulkarni
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

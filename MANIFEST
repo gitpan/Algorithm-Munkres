@@ -2,5 +2,10 @@ Changes
 Makefile.PL
 MANIFEST
 README
-t/Algorithm-Munkres.t
+t/Fractions.t
+t/LargeMatrix.t
+t/Negative.t
+t/Normal.t
+t/Obvious.t
+t/Unit.t
 lib/Algorithm/Munkres.pm

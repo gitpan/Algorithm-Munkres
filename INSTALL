@@ -1,0 +1,72 @@
+NAME
+	INSTALL - How to install Algorithm::Munkres
+
+SYNOPSIS
+	perl Makefile.PL
+
+	make
+
+	make test
+
+     	make install
+
+	make clean	
+
+DESCRIPTION
+
+   Prerequisites
+	NONE
+
+   Installing
+	The usual way to install the package is to run the following commands:
+
+	perl Makefile.PL
+
+     	make
+
+     	make test
+
+     	make install
+
+	make clean
+
+	If you are not a superuser or want to install the module locally following installation procedure should be used
+
+	perl Makefile.PL PREFIX=/home/Munkres
+
+     	make
+
+     	make test
+
+     	make install
+
+	make clean
+
+        these commands will install Algorithm::Munkres into /home/Munkres. 
+ 
+   System Requirements
+        This package has been written in Perl(v5.8.5),
+        which is freely available from www.perl.org. This package assumes
+        that perl is installed in the directory /usr/local/bin.
+
+AUTHORS
+	Anagha Kulkarni, University of Minnesota Duluth
+	kulka020@d.umn.edu
+	
+	Ted Pedersen, University of Minnesota Duluth
+	tpederse@d.umn.edu
+
+SEE ALSO
+    README
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2004-2005 Anagha Kulkarni and Ted Pedersen
+
+    Permission is granted to copy, distribute and/or modify this document
+    under the terms of the GNU Free Documentation License, Version 1.2 or
+    any later version published by the Free Software Foundation; with no
+    Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+
+    Note: a copy of the GNU Free Documentation License is available on the
+    web at <http://www.gnu.org/copyleft/fdl.html> and is included in this
+    distribution as FDL.txt.

@@ -1,6 +1,21 @@
-Revision history for Perl extension Algorithm::Munkres.
+NAME
+    Revision History for Algorithm::Munkres.
 
-0.01  Tue Nov  9 17:48:17 2004
-	- original version; created by h2xs 1.23 with options
-		-X -n Algorithm::Munkres -v 0.01
+SYNOPSIS
+    A list of changes to the Algorithm::Munkres module.
+
+DESCRIPTION
+    Version 0.02 (Algorithm::Munkres-0.02 Released on 17th Nov 2004)
+
+	1. Update perldoc for Munkres.pm
+	2. Removed installation instructions from README and moved it to INSTALL.
+	3. Removed diagnostic messages from Munkres.pm
+	4. Rectified a bug in the steptwo subroutine of Munkres.pm
+		(The array index variable for row cover matrix was incorrect)
+	5. Added few more test cases.
+
+    Version 0.01 (Algorithm::Munkres Released on 13th Nov 2004)
+
+	Algorithm::Munkres released on CPAN
+	Note: This version did not have an explicit version number in its name.
 

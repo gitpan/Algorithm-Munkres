@@ -1,80 +1,97 @@
-Algorithm-Munkres version 0.01
-=============================
+NAME
+    Algorithm::Munkres - Perl extension for Munkres' solution to classical
+    Assignment problem for square matrices
 
 SYNOPSIS
+    use Algorithm::Munkres;
 
-	Algorithm::Munkres implements Munkres' solution to classical Assignment problem
+        @mat = (
+             [ 12, 3, 7, 4, 10],
+             [ 5, 10, 6, 2, 4],
+             [ 8, 5, 1, 4, 9],
+             [ 15, 2, 7, 8, 10],
+             [ 7, 2, 8, 1, 12],
+             );
+
+    assign(\@mat,\@out_mat);
 
 DESCRIPTION
+    Assignment Problem: Given N jobs and N workers, how should the
+    assignment of a Worker to a Job be done, so as to minimize the time
+    taken.
 
-	Assignment Problem: Given N jobs and N workers, how should be assignment of Worker-Job, 
-	so as to minimize the time taken. 
+            Thus if we have 3 jobs p,q,r and 3 workers x,y,z such that:
+                x  y  z             
+             p  2  4  7
+             q  3  9  5
+             r  8  2  9
+        
+            where the cell values of the above matrix give the time required for the worker(given by column name) 
+            to complete the job(given by the row name) 
+    
+            then possible solutions are:    
+                             Total
+             1. 2, 9, 9       20
+             2. 2, 2, 5        9
+             3. 3, 4, 9       16
+             4. 3, 2, 7       12
+             5. 8, 9, 7       24
+             6. 8, 4, 5       17
 
-	Thus if we have 3 jobs p,q,r and 3 workers x,y,z such that:
-	   x  y  z		
-	p  2  4  7
-	q  3  9  5
-	r  8  2  9
+    Thus (2) is the optimal solution for the above problem. This kind of
+    brute-force approach of solving Assignment problem quickly becomes slow
+    and bulky as N grows, because the number of possible solution are N! and
+    thus the task is to evaluate each and then find the optimal solution.(If
+    N=10, number of possible solutions: 3628800 !) Munkres' gives us a
+    solution to this problem, which is implemented in this module.
 
-	then possible solutions are:	
-			Total
-	1. 2, 9, 9       20
-	2. 2, 2, 5        9
-	3. 3, 4, 9       16
-	4. 3, 2, 7       12
-	5. 8, 9, 7       24
-	6. 8, 4, 5       17
+EXPORT
+    "assign" function by default.
 
-	Thus (2) is the optimal solution for the above problem.
-	This kind of brute-force approach of solving Assignment problem quickly becomes slow and bulky as N grows, 
-	because the number of possible solution are N! and thus the task is to evaluate each and compare, to 
-	find the optimal solution.(If N=10, number of possible solutions: 3628800 !)
-	Munkres' gives us a solution to this problem, which is implemented in this module.
+INPUT
+    The input matrix should be in a two dimensional array(array of array)
+    and the 'assign' subroutine expects a reference to this array and not
+    the complete array. eg:assign(\@inp_mat, \@out_mat); The second argument
+    to the assign subroutine is the reference to the output array.
 
-INSTALLATION
+OUTPUT
+    The assign subroutine expects references to two arrays as its input
+    paramenters. The second parameter is the reference to the output array.
+    This array is populated by assign subroutine. This array is single
+    dimensional Nx1 matrix. For above example the output array returned will
+    be: (0, 2, 1)
 
-	To install this module type the following:
-	
-	   perl Makefile.PL
-	   make
-	   make test
-	   make install
+    where 0th element indicates that 0th row is assigned 0th column. 1st
+    element indicates that 1st row is assigned 2nd column. 2nd element
+    indicates that 2nd row is assigned 1st column.
 
-DEPENDENCIES
+SEE ALSO
+    1. http://216.249.163.93/bob.pilgrim/445/munkres.html
 
-	None
+    2. Munkres, J. Algorithms for the assignment and transportation
+    Problems. J. Siam 5 (Mar. 1957), 32-38
 
-REFERENCES
+    3. François Bourgeois and Jean-Claude Lassalle. 1971. An extension of
+    the Munkres algorithm for the assignment problem to rectangular
+    matrices. Communication ACM, 14(12):802-804
 
-	1. http://216.249.163.93/bob.pilgrim/445/munkres.html
+AUTHOR
+    Anagha Kulkarni, University of Minnesota, Duluth kulka020@d.umn.edu
 
-        2. Munkres, J. Algorithms for the assignment and transportation Problems. J. Siam 5 (Mar. 1957), 32-38
+    Ted Pedersen, University of Minnesota, Duluth tpederse@d.umn.edu
 
-        3. François Bourgeois and Jean-Claude Lassalle. 1971.
-           An extension of the Munkres algorithm for the assignment problem to rectangular matrices.
-           Communication ACM, 14(12):802-804
+COPYRIGHT AND LICENSE
+    Copyright (C) 2004-2005, Ted Pedersen and Anagha Kulkarni
 
-AUTHORS:
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 2 of the License, or (at your
+    option) any later version. This program is distributed in the hope that
+    it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+    warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
-        Anagha Kulkarni, University of Minnesota, Duluth
-        kulka020@d.umn.edu
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-        Ted Pedersen, University of Minnesota, Duluth
-        tpederse@d.umn.edu
-
-COPYRIGHT AND LICENCE
-
-Copyright (C) 2000-2004, Ted Pedersen and Anagha Kulkarni
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
