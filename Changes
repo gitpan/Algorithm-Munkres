@@ -1,0 +1,6 @@
+Revision history for Perl extension Algorithm::Munkres.
+
+0.01  Tue Nov  9 17:48:17 2004
+	- original version; created by h2xs 1.23 with options
+		-X -n Algorithm::Munkres -v 0.01
+

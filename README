@@ -1,0 +1,80 @@
+Algorithm-Munkres version 0.01
+=============================
+
+SYNOPSIS
+
+	Algorithm::Munkres implements Munkres' solution to classical Assignment problem
+
+DESCRIPTION
+
+	Assignment Problem: Given N jobs and N workers, how should be assignment of Worker-Job, 
+	so as to minimize the time taken. 
+
+	Thus if we have 3 jobs p,q,r and 3 workers x,y,z such that:
+	   x  y  z		
+	p  2  4  7
+	q  3  9  5
+	r  8  2  9
+
+	then possible solutions are:	
+			Total
+	1. 2, 9, 9       20
+	2. 2, 2, 5        9
+	3. 3, 4, 9       16
+	4. 3, 2, 7       12
+	5. 8, 9, 7       24
+	6. 8, 4, 5       17
+
+	Thus (2) is the optimal solution for the above problem.
+	This kind of brute-force approach of solving Assignment problem quickly becomes slow and bulky as N grows, 
+	because the number of possible solution are N! and thus the task is to evaluate each and compare, to 
+	find the optimal solution.(If N=10, number of possible solutions: 3628800 !)
+	Munkres' gives us a solution to this problem, which is implemented in this module.
+
+INSTALLATION
+
+	To install this module type the following:
+	
+	   perl Makefile.PL
+	   make
+	   make test
+	   make install
+
+DEPENDENCIES
+
+	None
+
+REFERENCES
+
+	1. http://216.249.163.93/bob.pilgrim/445/munkres.html
+
+        2. Munkres, J. Algorithms for the assignment and transportation Problems. J. Siam 5 (Mar. 1957), 32-38
+
+        3. François Bourgeois and Jean-Claude Lassalle. 1971.
+           An extension of the Munkres algorithm for the assignment problem to rectangular matrices.
+           Communication ACM, 14(12):802-804
+
+AUTHORS:
+
+        Anagha Kulkarni, University of Minnesota, Duluth
+        kulka020@d.umn.edu
+
+        Ted Pedersen, University of Minnesota, Duluth
+        tpederse@d.umn.edu
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2000-2004, Ted Pedersen and Anagha Kulkarni
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
