@@ -5,9 +5,15 @@ SYNOPSIS
     A list of changes to the Algorithm::Munkres module.
 
 DESCRIPTION
+   Version 0.03 (Algorithm::Munkres-0.03 Released on 21th Nov 2004)
+
+        1. Modified Munkres.pm to handle rectangular matrices
+	2. Added test cases to check for rectangular matrices
+	3. Updated perldoc for Munkres.pm and README accordingly	
+
     Version 0.02 (Algorithm::Munkres-0.02 Released on 17th Nov 2004)
 
-	1. Update perldoc for Munkres.pm
+	1. Updated perldoc for Munkres.pm
 	2. Removed installation instructions from README and moved it to INSTALL.
 	3. Removed diagnostic messages from Munkres.pm
 	4. Rectified a bug in the steptwo subroutine of Munkres.pm

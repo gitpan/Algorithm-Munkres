@@ -1,4 +1,4 @@
-# Algorithm-Munkres.t version 0.01
+# Negative.t version 0.01
 # (Updated 11/13/2004 -- Anagha)
 #
 # Copyright (C) 2004

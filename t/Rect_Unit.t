@@ -1,5 +1,5 @@
-# Fractions.t version 0.01
-# (Updated 11/13/2004 -- Anagha)
+# Rect_Unit.t version 0.01
+# (Updated 11/19/2004 -- Anagha)
 #
 # Copyright (C) 2004
 #
@@ -10,7 +10,7 @@
 # tpederse@d.umn.edu
 
 # A script to run tests on the Algorithm::Mukres module.
-# This test cases check for fractional input values.
+# This test cases check for rectangular input matrix i.e. MxN matrix.
 # The following are among the tests run by this script:
 # 1. Try loading the Algorithm::Munkres i.e. is it added to the @INC variable
 # 2. Compare the lengths of the Solution array and the Output array.
@@ -19,17 +19,19 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 7;
 
 BEGIN { use_ok('Algorithm::Munkres') };
 
 my @mat = (
-	[2.25, 4.03, 7.004],
-	[3.1, 9.86, 5.45],
-	[8.32, 2.0, 9.99],
+	[1],
+	[1],
+	[1],
+	[1],
+	[1],
 	);
 
-my @soln = (0,2,1);
+my @soln = (0,1,2,3,4);
 
 my @assign_out = ();
 my $i = 0;

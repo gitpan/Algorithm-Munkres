@@ -8,4 +8,10 @@ t/Negative.t
 t/Normal.t
 t/Obvious.t
 t/Unit.t
+t/Ill_Formed.t
+t/Rect_Matrix2.t
+t/Horz_Matrix.t
+t/Rect_Matrix1.t 
+t/Rect_Unit.t
+t/Vert_Matrix.t
 lib/Algorithm/Munkres.pm

@@ -11,7 +11,7 @@ our @ISA = qw(Exporter);
 
 our @EXPORT = qw( assign );
 
-our $VERSION = '0.01';
+our $VERSION = '0.03';
 
 #Variables global to the package
 my @mat = ();
@@ -21,7 +21,6 @@ my @rowcov = ();
 my $Z0_row = 0;
 my $Z0_col = 0;
 my @path = ();
-#my @org_mat = ();
 
 #The exported subroutine.
 #Expected Input: Reference to the input matrix (MxN)
@@ -31,17 +30,64 @@ sub assign
     #reference to the input matrix
     my $rmat = shift;
     my $rsolution_mat = shift;
-    
+    my ($row, $row_len) = (0,0);
+
     #variables local to the subroutine
     my $step = 0;
     my ($i, $j) = (0,0);
-#    my @out_mat = ();
 
     #the input matrix
-    @mat = @$rmat;
+    my @inp_mat = @$rmat;
 
     #copy the orginal matrix, before applying the algorithm to the matrix
-#   @org_mat = @mat;
+    for($i=0;$i<=$#inp_mat;$i++)
+    {
+	for($j=0;$j<=$#{$inp_mat[$i]};$j++)
+	{
+	    $mat[$i][$j] = $inp_mat[$i][$j];
+	}
+    }
+
+    #check if the input matrix is well-formed i.e. either square or rectangle.
+    $row_len = $#{$mat[0]};
+    for($i=0;$i<=$#mat;$i++)
+    {
+	if($row_len != $#{$mat[$i]})
+	{
+	    die "Please check the input matrix.\nThe input matrix is not a well-formed matrix!\nThe input matrix has to be rectangular or square matrix.\n";
+	}
+    }
+
+    #check if the matrix is a square matrix, 
+    #if not convert it to square matrix by padding zeroes.
+    if($#mat < $#{$mat[0]})
+    {
+	my $r_index = 0;
+	my $diff = $#{$mat[0]} - $#mat;
+	$r_index = $#mat + 1;
+	for($i = 0; $i < $diff; $i++)
+	{
+	    for($j=0;$j<=$#{$mat[0]};$j++)
+	    {
+		$mat[$r_index][$j] = 0;
+	    }
+	    $r_index++;
+	}
+    }
+    elsif($#mat > $#{$mat[0]})
+    {
+	my $c_index = 0;
+	my $diff = $#mat - $#{$mat[0]};
+	$c_index = $#{$mat[0]} + 1;
+	for($i = 0; $i < $diff; $i++)
+	{
+	    for($j=0;$j<=$#mat;$j++)
+	    {
+		$mat[$j][$c_index] = 0;
+	    }
+	    $c_index++;
+	}
+    }
 
     #initialize mask, column cover and row cover matrices
     for($i=0;$i<=$#mat;$i++)
@@ -52,7 +98,7 @@ sub assign
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    $mask[$i][$j] = 0;
 	}
@@ -77,7 +123,7 @@ sub assign
     #create the output matrix
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($mask[$i][$j] == 1)
 	    {
@@ -85,6 +131,7 @@ sub assign
 	    }
 	}
     }
+
 
 #Code for tracing------------------
     <<'ee';
@@ -129,13 +176,12 @@ sub stepone
     for($i=0;$i<=$#mat;$i++)
     {
 	$min[$i] = $mat[$i][0];
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($min[$i] > $mat[$i][$j])
 	    {
 		$min[$i] = $mat[$i][$j];
 	    }
-#	    print $mat[$i][$j] . "\t";
 	}    
 	
         #Subtract the minimum value of the row from each element of the row.
@@ -158,7 +204,7 @@ sub steptwo
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($mat[$i][$j] == 0 && $colcov[$j] == 0 && $rowcov[$i] == 0)
 	    {
@@ -183,7 +229,7 @@ sub stepthree
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($mask[$i][$j] == 1)
 	    {
@@ -414,7 +460,7 @@ sub erase_primes
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($mask[$i][$j] == 2)
 	    {
@@ -439,7 +485,7 @@ sub stepsix
     
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($rowcov[$i] == 1)
 	    {
@@ -463,7 +509,7 @@ sub find_smallest
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#mat;$j++)
+	for($j=0;$j<=$#{$mat[$i]};$j++)
 	{
 	    if($rowcov[$i] == 0 && $colcov[$j] == 0)
 	    {
@@ -484,26 +530,37 @@ __END__
 
 =head1 NAME
 
-Algorithm::Munkres - Perl extension for Munkres' solution to classical Assignment problem for square matrices
+    Algorithm::Munkres - Perl extension for Munkres' solution to 
+    classical Assignment problem for square and rectangular matrices 
+    This module extends the solution of Assignement problem for square
+    matrices to rectangular matrices by padding zeros. Thus a rectangular 
+    matrix is converted to square matrix by padding necessary zeros.
 
 =head1 SYNOPSIS
 
 use Algorithm::Munkres;
 
     @mat = (
-         [ 12, 3, 7, 4, 10],
-	 [ 5, 10, 6, 2, 4],
-	 [ 8, 5, 1, 4, 9],
-	 [ 15, 2, 7, 8, 10],
-	 [ 7, 2, 8, 1, 12],
+	 [2, 4, 7, 9],
+	 [3, 9, 5, 1],
+	 [8, 2, 9, 7],
 	 );
 
 assign(\@mat,\@out_mat);
 
+    Then the @out_mat array will have the output as: (0,3,1,2),
+    where 
+    0th element indicates that 0th row is assigned 0th column i.e value=2
+    1st element indicates that 1st row is assigned 3rd column i.e.value=1
+    2nd element indicates that 2nd row is assigned 1st column.i.e.value=2
+    3rd element indicates that 3rd row is assigned 2nd column.i.e.value=0
+
+
 =head1 DESCRIPTION
 
-Assignment Problem: Given N jobs and N workers, how should the assignment of a Worker to a Job be done, 
-so as to minimize the time taken. 
+    Assignment Problem: Given N jobs, N workers and the time taken by 
+    each worker to complete a job then how should the assignment of a 
+    Worker to a Job be done, so as to minimize the time taken. 
 
 	Thus if we have 3 jobs p,q,r and 3 workers x,y,z such that:
 	    x  y  z		
@@ -511,8 +568,9 @@ so as to minimize the time taken.
 	 q  3  9  5
 	 r  8  2  9
         
-        where the cell values of the above matrix give the time required for the worker(given by column name) 
-        to complete the job(given by the row name) 
+        where the cell values of the above matrix give the time required
+        for the worker(given by column name) to complete the job(given by 
+        the row name) 
     
 	then possible solutions are:	
 		 	 Total
@@ -523,56 +581,76 @@ so as to minimize the time taken.
 	 5. 8, 9, 7       24
 	 6. 8, 4, 5       17
 
-Thus (2) is the optimal solution for the above problem.
-This kind of brute-force approach of solving Assignment problem quickly becomes slow and bulky as N grows, 
-because the number of possible solution are N! and thus the task is to evaluate each and then  
-find the optimal solution.(If N=10, number of possible solutions: 3628800 !)
-Munkres' gives us a solution to this problem, which is implemented in this module.
+    Thus (2) is the optimal solution for the above problem.
+    This kind of brute-force approach of solving Assignment problem 
+    quickly becomes slow and bulky as N grows, because the number of 
+    possible solution are N! and thus the task is to evaluate each 
+    and then find the optimal solution.(If N=10, number of possible
+    solutions: 3628800 !)
+    Munkres' gives us a solution to this problem, which is implemented 
+    in this module.
+
+    This module also solves Assignment problem for rectangular matrices 
+    (M x N) by converting them to square matrices by padding zeros. ex:
+    If input matrix is:
+	 [2, 4, 7, 9],
+	 [3, 9, 5, 1],
+	 [8, 2, 9, 7]
+    i.e 3 x 4 then we will convert it to 4 x 4 and the modified input 
+    matrix will be:
+	 [2, 4, 7, 9],
+	 [3, 9, 5, 1],
+	 [8, 2, 9, 7],
+ 	 [0, 0, 0, 0]
 
 =head1 EXPORT
 
-"assign" function by default.
+    "assign" function by default.
 
 =head1 INPUT
 
-The input matrix should be in a two dimensional array(array of array) and the 
-'assign' subroutine expects a reference to this array and not the complete array.
-eg:assign(\@inp_mat, \@out_mat);
-The second argument to the assign subroutine is the reference to the output array.
+    The input matrix should be in a two dimensional array(array of 
+    array) and the 'assign' subroutine expects a reference to this 
+    array and not the complete array. 
+    eg:assign(\@inp_mat, \@out_mat);
+    The second argument to the assign subroutine is the reference 
+    to the output array.
 
 =head1 OUTPUT
 
-The assign subroutine expects references to two arrays as its input paramenters. 
-The second parameter is the reference to the output array. This array is populated by assign subroutine.
-This array is single dimensional Nx1 matrix.
-For above example the output array returned will be:
+    The assign subroutine expects references to two arrays as its 
+    input paramenters. The second parameter is the reference to the
+    output array. This array is populated by assign subroutine. This 
+    array is single dimensional Nx1 matrix.
+    For above example the output array returned will be:
      (0,
      2,
      1)
 
-where 
-0th element indicates that 0th row is assigned 0th column.
-1st element indicates that 1st row is assigned 2nd column.
-2nd element indicates that 2nd row is assigned 1st column.
+    where 
+    0th element indicates that 0th row is assigned 0th column i.e value=2
+    1st element indicates that 1st row is assigned 2nd column i.e.value=5
+    2nd element indicates that 2nd row is assigned 1st column.i.e.value=2
 
 =head1 SEE ALSO
 
-1. http://216.249.163.93/bob.pilgrim/445/munkres.html
+    1. http://216.249.163.93/bob.pilgrim/445/munkres.html
 
-2. Munkres, J. Algorithms for the assignment and transportation Problems. J. Siam 5 (Mar. 1957), 32-38
+    2. Munkres, J. Algorithms for the assignment and transportation 
+       Problems. J. Siam 5 (Mar. 1957), 32-38
 
-3. François Bourgeois and Jean-Claude Lassalle. 1971.
-   An extension of the Munkres algorithm for the assignment problem to rectangular matrices.
-   Communication ACM, 14(12):802-804
-
+    3. François Bourgeois and Jean-Claude Lassalle. 1971.
+       An extension of the Munkres algorithm for the assignment 
+       problem to rectangular matrices.
+       Communication ACM, 14(12):802-804
 
 =head1 AUTHOR
 
-Anagha Kulkarni, University of Minnesota, Duluth
-kulka020@d.umn.edu
-
-Ted Pedersen, University of Minnesota, Duluth
-tpederse@d.umn.edu
+    Anagha Kulkarni, University of Minnesota Duluth
+    kulka020 <at> d.umn.edu
+	
+    Ted Pedersen, University of Minnesota Duluth
+    tpederse <at> d.umn.edu
 
 =head1 COPYRIGHT AND LICENSE
 
