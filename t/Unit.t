@@ -1,7 +1,6 @@
 # Unit.t version 0.01
-# (Updated 11/13/2004 -- Anagha)
 #
-# Copyright (C) 2004
+# Copyright (C) 2005 - 2006
 #
 # Anagha Kulkarni, University of Minnesota Duluth
 # kulka020@d.umn.edu

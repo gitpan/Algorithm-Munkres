@@ -11,7 +11,7 @@ our @ISA = qw(Exporter);
 
 our @EXPORT = qw( assign );
 
-our $VERSION = '0.03';
+our $VERSION = '0.06';
 
 #Variables global to the package
 my @mat = ();
@@ -654,7 +654,7 @@ assign(\@mat,\@out_mat);
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2004-2005, Ted Pedersen and Anagha Kulkarni
+Copyright (C) 2005-2006, Ted Pedersen and Anagha Kulkarni
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
