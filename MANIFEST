@@ -14,4 +14,5 @@ t/Horz_Matrix.t
 t/Rect_Matrix1.t 
 t/Rect_Unit.t
 t/Vert_Matrix.t
+t/DoubleInvoke.t
 lib/Algorithm/Munkres.pm

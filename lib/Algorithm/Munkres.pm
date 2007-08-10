@@ -11,7 +11,7 @@ our @ISA = qw(Exporter);
 
 our @EXPORT = qw( assign );
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 #Variables global to the package
 my @mat = ();
@@ -31,6 +31,15 @@ sub assign
     my $rmat = shift;
     my $rsolution_mat = shift;
     my ($row, $row_len) = (0,0);
+
+	# re-initialize that global variables
+	@mat = ();
+    @mask = ();
+    @colcov = ();
+    @rowcov = ();
+    $Z0_row = 0;
+    $Z0_col = 0;
+    @path = ();
 
     #variables local to the subroutine
     my $step = 0;
@@ -654,7 +663,7 @@ assign(\@mat,\@out_mat);
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2005-2006, Ted Pedersen and Anagha Kulkarni
+Copyright (C) 2007-2008, Ted Pedersen and Anagha Kulkarni
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
