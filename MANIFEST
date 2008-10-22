@@ -16,3 +16,4 @@ t/Rect_Unit.t
 t/Vert_Matrix.t
 t/DoubleInvoke.t
 lib/Algorithm/Munkres.pm
+META.yml                                 Module meta-data (added by MakeMaker)

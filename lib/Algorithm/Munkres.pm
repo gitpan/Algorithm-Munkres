@@ -1,17 +1,16 @@
 package Algorithm::Munkres;
 
-use 5.004;
+use 5.006;
 use strict;
 use warnings;
 
 require Exporter;
-use AutoLoader qw(AUTOLOAD);
 
 our @ISA = qw(Exporter);
 
 our @EXPORT = qw( assign );
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 #Variables global to the package
 my @mat = ();
@@ -32,8 +31,8 @@ sub assign
     my $rsolution_mat = shift;
     my ($row, $row_len) = (0,0);
 
-	# re-initialize that global variables
-	@mat = ();
+    # re-initialize that global variables
+    @mat = ();
     @mask = ();
     @colcov = ();
     @rowcov = ();
@@ -49,19 +48,16 @@ sub assign
     my @inp_mat = @$rmat;
 
     #copy the orginal matrix, before applying the algorithm to the matrix
-    for($i=0;$i<=$#inp_mat;$i++)
+    foreach (@inp_mat)
     {
-	for($j=0;$j<=$#{$inp_mat[$i]};$j++)
-	{
-	    $mat[$i][$j] = $inp_mat[$i][$j];
-	}
+	push @mat, [ @$_ ];
     }
 
     #check if the input matrix is well-formed i.e. either square or rectangle.
     $row_len = $#{$mat[0]};
-    for($i=0;$i<=$#mat;$i++)
+    foreach my $row (@mat)
     {
-	if($row_len != $#{$mat[$i]})
+	if($row_len != $#$row)
 	{
 	    die "Please check the input matrix.\nThe input matrix is not a well-formed matrix!\nThe input matrix has to be rectangular or square matrix.\n";
 	}
@@ -71,46 +67,29 @@ sub assign
     #if not convert it to square matrix by padding zeroes.
     if($#mat < $#{$mat[0]})
     {
-	my $r_index = 0;
+	# Add rows
 	my $diff = $#{$mat[0]} - $#mat;
-	$r_index = $#mat + 1;
-	for($i = 0; $i < $diff; $i++)
+	for (1 .. $diff)
 	{
-	    for($j=0;$j<=$#{$mat[0]};$j++)
-	    {
-		$mat[$r_index][$j] = 0;
-	    }
-	    $r_index++;
+	    push @mat, [ (0) x @{$mat[0]} ];
 	}
     }
     elsif($#mat > $#{$mat[0]})
     {
-	my $c_index = 0;
+	# Add columns
 	my $diff = $#mat - $#{$mat[0]};
-	$c_index = $#{$mat[0]} + 1;
-	for($i = 0; $i < $diff; $i++)
+	for (0 .. $#mat)
 	{
-	    for($j=0;$j<=$#mat;$j++)
-	    {
-		$mat[$j][$c_index] = 0;
-	    }
-	    $c_index++;
+	    push @{$mat[$_]}, (0) x $diff;
 	}
     }
 
     #initialize mask, column cover and row cover matrices
-    for($i=0;$i<=$#mat;$i++)
-    {
-	$colcov[$i] = 0;
-	$rowcov[$i] = 0;
-    }
+    clear_covers();
 
     for($i=0;$i<=$#mat;$i++)
     {
-	for($j=0;$j<=$#{$mat[$i]};$j++)
-	{
-	    $mask[$i][$j] = 0;
-	}
+ 	push @mask, [ (0) x @mat ];
     }
 
     #The algorithm can be grouped in 6 steps.
@@ -130,9 +109,9 @@ sub assign
     }
 
     #create the output matrix
-    for($i=0;$i<=$#mat;$i++)
+    for my $i (0 .. $#mat)
     {
-	for($j=0;$j<=$#{$mat[$i]};$j++)
+	for my $j (0 .. $#{$mat[$i]})
 	{
 	    if($mask[$i][$j] == 1)
 	    {
@@ -165,10 +144,7 @@ sub assign
     }
 
     print "\nOutput Matrix:\n";
-    for($i=0;$i<=$#mat;$i++)
-    {
-	print $rsolution_mat->[$i] . "\n";
-    }
+    print "$_\n" for @$rsolution_mat;
 ee
 
 #----------------------------------
@@ -179,25 +155,18 @@ ee
 sub stepone
 {
 #    print "Step 1 \n";
-    my ($i, $j, @min);
 
     #Find the minimum value for every row
-    for($i=0;$i<=$#mat;$i++)
+    for my $row (@mat)
     {
-	$min[$i] = $mat[$i][0];
-	for($j=0;$j<=$#{$mat[$i]};$j++)
+	my $min = $row->[0];
+	for (@$row)
 	{
-	    if($min[$i] > $mat[$i][$j])
-	    {
-		$min[$i] = $mat[$i][$j];
-	    }
+	    $min = $_ if $min > $_;
 	}    
 	
         #Subtract the minimum value of the row from each element of the row.
-	for($j=0;$j<=$#mat;$j++)
-	{
-	    $mat[$i][$j] -= $min[$i];
-	}	
+	@$row = map {$_ - $min} @$row;
     }
 #    print "Step 1 end \n";
 }
@@ -234,11 +203,10 @@ sub stepthree
 #    print "Step 3 \n";
 
     my $cnt = 0;
-    my ($i, $j) = (0,0);
 
-    for($i=0;$i<=$#mat;$i++)
+    for my $i (0 .. $#mat)
     {
-	for($j=0;$j<=$#{$mat[$i]};$j++)
+	for my $j (0 .. $#mat)
 	{
 	    if($mask[$i][$j] == 1)
 	    {
@@ -268,86 +236,63 @@ sub stepthree
 sub stepfour
 {
 #    print "Step 4 \n";
-    my $done  = 0;
-    my $step = 0;
-    my ($row,$col) = (-1,-1);
-    my $star_col = -1;
 
-    while($done == 0)
+    while(1)
     {
-	($row, $col) = &find_a_zero();
-	if($row < 0)
+	my ($row, $col) = &find_a_zero();
+	if ($row < 0)
 	{
-	    $done = 1;
-	    $step = 6;
+	    # No zeroes
+	    return 6;
+	}
+
+	$mask[$row][$col] = 2;
+	my $star_col = &find_star_in_row($row);
+	if ($star_col >= 0)
+	{
+	    $col = $star_col;
+	    $rowcov[$row] = 1;
+	    $colcov[$col] = 0;
 	}
 	else
 	{
-	    $mask[$row][$col] = 2;
-	    $star_col = &find_star_in_row($row);
-	    if($star_col >= 0)
-	    {
-		$col = $star_col;
-		$rowcov[$row] = 1;
-		$colcov[$col] = 0;
-	    }
-	    else
-	    {
-		$done = 1;
-		$Z0_row = $row;
-		$Z0_col = $col;
-		$step = 5;;
-	    }
+	    $Z0_row = $row;
+	    $Z0_col = $col;
+	    return 5;
 	}
     }
-#    print "Step 4 end. Next expected step $step\n";
-    return $step;
 }
 
 #Tries to find yet uncovered zero
 sub find_a_zero
 {
-    my ($row, $col);
-    my ($i, $j);
-    my $done = 0;
-    $row = -1;
-    $col = -1;
-    $i = 0;
-
-    do
+    for my $i (0 .. $#mat)
     {
-	$j = 0;
-	do
-	{
-	    if($mat[$i][$j] == 0 && $rowcov[$i] == 0 and $colcov[$j] == 0)
-	    {
-		$row = $i;
-		$col = $j;
-		$done = 1;
-	    }
-	    $j++;
-	}while($j<=$#mat);
-	$i++;
-    }while($i<=$#mat && $done == 0);
+	next if $rowcov[$i];
 
-    return ($row, $col);
+	for my $j (reverse(0 .. $#mat))  # Prefer large $j
+	{
+	    next if $colcov[$j];
+	    return ($i, $j) if $mat[$i][$j] == 0;
+	}
+    }
+
+    return (-1, -1);
 }
 
 #Tries to find starred zero in the given row and returns the column number
 sub find_star_in_row
 {
     my $row = shift;
-    my $col = -1;
-    my $j = 0;
 
-    for($j=0;$j<=$#mat;$j++)
+    for my $j (0 .. $#mat)
     {
 	if($mask[$row][$j] == 1)
 	{
-	    $col = $j;
+	    return $j;
 	}
     }
-    return $col;
+    return -1;
 }
 
 #Step 5 - Try to find a starred zero in the column of the uncovered zero found in the step 4.
@@ -362,14 +307,13 @@ sub stepfive
 
     my $cnt = 0;
     my $done = 0;
-    my ($row, $col) = (-1,-1);
 
     $path[$cnt][0] = $Z0_row;
     $path[$cnt][1] = $Z0_col;
     
     while($done == 0)
     {
-	$row = &find_star_in_col($path[$cnt][1]);
+	my $row = &find_star_in_col($path[$cnt][1]);
 	if($row > -1)
 	{
 	    $cnt++;
@@ -382,7 +326,7 @@ sub stepfive
 	}
 	if($done == 0)
 	{
-	    $col = &find_prime_in_row($path[$cnt][0]);
+	    my $col = &find_prime_in_row($path[$cnt][0]);
 	    $cnt++;
 	    $path[$cnt][0] = $path[$cnt - 1][0];
 	    $path[$cnt][1] = $col;
@@ -399,36 +343,26 @@ sub stepfive
 sub find_star_in_col
 {
     my $col = shift;
-    my $row = -1;
-    my $i = 0;
 
-    for($i=0;$i<=$#mat;$i++)
+    for my $i (0 .. $#mat)
     {
-	if($mask[$i][$col] == 1)
-	{
-	    $row = $i;
-	}
+	return $i if $mask[$i][$col] == 1;
     }
     
-    return $row;
+    return -1;
 }
 
 #Tries to find primed zero in the given row and returns the column number
 sub find_prime_in_row
 {
     my $row = shift;
-    my $col = -1;
-    my $j = 0;
 
-    for($j=0;$j<=$#mat;$j++)
+    for my $j (0 .. $#mat)
     {
-	if($mask[$row][$j] == 2)
-	{
-	    $col = $j;
-	}
+	return $j if $mask[$row][$j] == 2;
     }
     
-    return $col;
+    return -1;
 }
 
 #Reduces non-zero value in the mask matrix by 1.
@@ -436,17 +370,11 @@ sub find_prime_in_row
 sub convert_path
 {
     my $cnt = shift;
-    my ($i, $j) = (0,0);
 
-    for($i=0;$i<=$cnt;$i++)
+    for my $i (0 .. $cnt)
     {
-	if($mask[$path[$i][0]][$path[$i][1]] == 1)
-	{
-	   $mask[$path[$i][0]][$path[$i][1]] = 0;
-	}
-	else
-	{
-	   $mask[$path[$i][0]][$path[$i][1]] = 1;
+	for ( $mask[$path[$i][0]][$path[$i][1]] ) {
+	    $_ = ( $_ == 1 ) ? 0 : 1;
 	}
     }
 }
@@ -454,33 +382,22 @@ sub convert_path
 #Clears cover matrices
 sub clear_covers
 {
-    my $i;
-    for($i=0;$i<=$#mat;$i++)
-    {
-	$rowcov[$i] = 0;
-	$colcov[$i] = 0;
-    }
+    @rowcov = @colcov = (0) x @mat;
 }
 
 #Changes all primes i.e. values=2 to 0.
 sub erase_primes
 {
-    my ($i, $j);
-
-    for($i=0;$i<=$#mat;$i++)
+    for my $row (@mask)
     {
-	for($j=0;$j<=$#{$mat[$i]};$j++)
+	for my $j (0 .. $#$row)
 	{
-	    if($mask[$i][$j] == 2)
-	    {
-		$mask[$i][$j] = 0;
-	    }
+	    $row->[$j] = 0 if $row->[$j] == 2;
 	}
     }
-
 }
 
-#Step 6 - Find the minimun value from the rows and columns which are currently not covered.
+#Step 6 - Find the minimum value from the rows and columns which are currently not covered.
 #Subtract this minimum value from all the elements of the columns which are not covered.
 #Add this minimum value to all the elements of the rows which are covered.
 #Proceed to step 4.
@@ -513,26 +430,24 @@ sub stepsix
 #Finds the minimum value from all the matrix values which are not covered.
 sub find_smallest
 {
-    my $minval = 99999999999;
-    my ($i, $j);    
+    my $minval;
 
-    for($i=0;$i<=$#mat;$i++)
+    for my $i (0 .. $#mat)
     {
-	for($j=0;$j<=$#{$mat[$i]};$j++)
+	next if $rowcov[$i];
+
+	for my $j (0 .. $#mat)
 	{
-	    if($rowcov[$i] == 0 && $colcov[$j] == 0)
+	    next if $colcov[$j];
+	    if( !defined($minval) || $minval > $mat[$i][$j])
 	    {
-		if($minval > $mat[$i][$j])
-		{
-		    $minval = $mat[$i][$j];
-		}
+		$minval = $mat[$i][$j];
 	    }
 	}
     }
     return $minval;
 }
 
-# Autoload methods go after =cut, and are processed by the autosplit program.
 
 1;
 __END__
